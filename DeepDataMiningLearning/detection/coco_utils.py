@@ -7,7 +7,6 @@ import DeepDataMiningLearning.detection.transforms as T
 from pycocotools import mask as coco_mask
 from pycocotools.coco import COCO
 
-
 def convert_coco_poly_to_mask(segmentations, height, width):
     masks = []
     for polygons in segmentations:
@@ -194,15 +193,38 @@ class CocoDetection(torchvision.datasets.CocoDetection):
         image_id = self.ids[idx] #list(sorted(self.coco.imgs.keys()))
         target = dict(image_id=image_id, annotations=target)
         if self._transforms is not None:
+            # print("cocoutils line 197 image:",img)
+            # print("cocoutils line 197 target:",target)
             img, target = self._transforms(img, target)
+            
         return img, target
+    # def __getitem__(self, idx):
+    #     print(f"Fetching data for index: {idx}")
+    #     if idx >= len(self.ids):
+    #         raise ValueError(f"Index {idx} out of range for dataset with length {len(self.ids)}")
+    #     # print("idx",idx)
+    #     img, target = super().__getitem__(idx)
+    #     if target is None:
+    #         print(f"No target found for index: {idx}")
+    #         return None
+
+    #     image_id = self.ids[idx]
+    #     print(f"Image ID for index {idx}: {image_id}")
+
+    #     target = {'image_id': image_id, 'annotations': target}
+
+    #     if self._transforms is not None:
+    #         print(f"Applying transforms for index {idx}")
+    #         img, target = self._transforms(img, target)
+        
+    #     return img, target
 
 
 def get_coco(root, image_set, transforms, mode="instances", use_v2=False, with_masks=False):
     anno_file_template = "{}_{}2017.json"
     PATHS = {
-        "train": ("train2017", os.path.join("annotations", anno_file_template.format(mode, "train"))),
-        "val": ("val2017", os.path.join("annotations", anno_file_template.format(mode, "val"))),
+        "train": ("images", os.path.join("annotations", anno_file_template.format(mode, "train"))),
+        "val": ("images", os.path.join("annotations", anno_file_template.format(mode, "val"))),
         # "train": ("val2017", os.path.join("annotations", anno_file_template.format(mode, "val")))
     }
 

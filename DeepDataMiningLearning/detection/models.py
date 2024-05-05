@@ -99,6 +99,7 @@ def create_testdata():
         targets.append(d)
     return images, targets
 
+
 #Pass
 def test_defaultmodels():
     model_names=list_models(module=torchvision.models)
@@ -174,7 +175,7 @@ def load_checkpoint(model, ckpt_file, fp16=False):
     model.half() if fp16 else model.float()
     return model
 
-def create_detectionmodel(modelname, num_classes=None, trainable_layers=0, ckpt_file = None, fp16=False, device= 'cuda:0', scale='n'):
+def create_detectionmodel(modelname, num_classes=None, trainable_layers=0, ckpt_file = None, fp16=False, device= 'cpu', scale='n'):
     model = None
     preprocess = None
     classes = None
@@ -203,6 +204,12 @@ def create_detectionmodel(modelname, num_classes=None, trainable_layers=0, ckpt_
         print('Model name not supported')
 
     if model:
+        for i, param in enumerate(model.parameters()):
+            if i < 205:
+                param.requires_grad = False
+            else:
+                break
+
         summary(model=model, 
             input_size=(32, 3, 224, 224), # make sure this is "input_size", not "input_shape"
             # col_names=["input_size"], # uncomment for smaller output
